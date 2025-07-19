@@ -1,4 +1,5 @@
 #Working ESP Home Config for my First PCB Lets call it Version 1.1 (due to a few soldering missteps)
+#version 1.1.1 - 19/7/25
 esphome:
   name: namehere #name used for mdns? ie namehere.local
   friendly_name: friendly name here
@@ -29,13 +30,22 @@ wifi:
     password: "REDACTED"
 
 #define contact sensors on input pins
-binary_sensor:
+binary_sensor: # Previously had these two binary sensors as 34 & 35 mistake no pullup/pulldown resistors built in
   - platform: gpio
-    pin: 35
     id: door_closed
+    pin:
+      number: 13
+      mode:
+        input: true
+        pulldown: true
     name: Door Closed
+    
   - platform: gpio
-    pin: 34
+    pin:
+      number: 12 # Move this to GPIO14 as 12 is considered a "Strapping pin"
+      mode:
+        input: true
+        pulldown: true
     id: door_open
     name: Door Open
 
