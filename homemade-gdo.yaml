@@ -1,5 +1,5 @@
 #Working ESP Home Config for my First PCB Lets call it Version 1.1 (due to a few soldering missteps)
-#version 1.1.1 - 19/7/25
+#version 1.1.4 - 20/7/25
 esphome:
   name: namehere #name used for mdns? ie namehere.local
   friendly_name: friendly name here
@@ -42,7 +42,7 @@ binary_sensor: # Previously had these two binary sensors as 34 & 35 mistake no p
     
   - platform: gpio
     pin:
-      number: 12 # Move this to GPIO14 as 12 is considered a "Strapping pin"
+      number: 14 # Moved to GPIO14 as 12 is considered a "Strapping pin"
       mode:
         input: true
         pulldown: true
@@ -69,20 +69,21 @@ cover:
     device_class: garage
     has_built_in_endstop: true
     max_duration: 
-      seconds: 25
+      seconds: 20
+    direction_change_wait_time: 
+      seconds: 2
     open_action:
     - switch.turn_on: open_close_relay
     open_endstop: door_open
     open_duration: 
-      seconds: 21
-    close_action: 
+      seconds: 17 #Adjusted open and close timing to suit the door better.
+    close_action: #added close action to see if it will make it function better.
     - switch.turn_on: open_close_relay
     close_endstop: door_closed
     close_duration: 
-      seconds: 21
+      seconds: 17
     stop_action: 
-      then:
-        - logger.log: Stop Action Performed!
+    - switch.turn_on: open_close_relay
     on_open: 
       then:
       - logger.log: Left Garage Door is Open!
@@ -90,8 +91,9 @@ cover:
       then:
         - logger.log: Left Garage Door is Closed!
 
-web_server:
+web_server: #Changed Webserver to see how the other versions looked
   port: 80
-    
+  log: False
+  version: 2
+
 captive_portal:
-    
