@@ -1,11 +1,11 @@
 #Working ESP Home Config for my First PCB Lets call it Version 1.1 (due to a few soldering missteps)
-#version 1.1.4 - 20/7/25
+#version 1.1.6 - 13/8/25
 esphome:
   name: namehere #name used for mdns? ie namehere.local
   friendly_name: friendly name here
 
 esp32:
-  board: esp32dev
+  board: esp32dev #set to board being used.
   framework:
     type: esp-idf
 
@@ -30,7 +30,7 @@ wifi:
     password: "REDACTED"
 
 #define contact sensors on input pins
-binary_sensor: # Previously had these two binary sensors as 34 & 35 mistake no pullup/pulldown resistors built in
+binary_sensor: # Set these to pins that are not strapping pins and have pull up/down resistors built in
   - platform: gpio
     id: door_closed
     pin:
@@ -42,12 +42,22 @@ binary_sensor: # Previously had these two binary sensors as 34 & 35 mistake no p
     
   - platform: gpio
     pin:
-      number: 14 # Moved to GPIO14 as 12 is considered a "Strapping pin"
+      number: 14
       mode:
         input: true
         pulldown: true
     id: door_open
     name: Door Open
+
+  - platform: template #Binary Open Close Sensor, this is for porting out to Scrypted NVR so Door Open/Closed Events are recorded in the camera roll
+    name: Door State
+    lambda: |-
+      if (id(door_closed).state == true) {
+        return false;
+        } else {
+          return true;
+        }
+    device_class: door
 
 #"Momentary" Switch to trigger Open/Close Relay
 switch:
