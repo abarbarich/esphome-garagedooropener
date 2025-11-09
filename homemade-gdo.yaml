@@ -30,7 +30,7 @@ wifi:
     password: "REDACTED"
 
 #define contact sensors on input pins
-binary_sensor: # Set these to pins that are not strapping pins and have pull up/down resistors built in
+binary_sensor: # Previously had these two binary sensors as 34 & 35 mistake no pullup/pulldown resistors built in
   - platform: gpio
     id: door_closed
     pin:
@@ -38,6 +38,7 @@ binary_sensor: # Set these to pins that are not strapping pins and have pull up/
       mode:
         input: true
         pulldown: true
+    internal: True
     name: Door Closed
     
   - platform: gpio
@@ -47,10 +48,11 @@ binary_sensor: # Set these to pins that are not strapping pins and have pull up/
         input: true
         pulldown: true
     id: door_open
+    internal: True
     name: Door Open
 
-  - platform: template #Binary Open Close Sensor, this is for porting out to Scrypted NVR so Door Open/Closed Events are recorded in the camera roll
-    name: Door State
+  - platform: template
+    name: Door state
     lambda: |-
       if (id(door_closed).state == true) {
         return false;
@@ -62,7 +64,7 @@ binary_sensor: # Set these to pins that are not strapping pins and have pull up/
 #"Momentary" Switch to trigger Open/Close Relay
 switch:
   - platform: gpio
-    pin: 33
+    pin: 48
     device_class: switch
     id: open_close_relay
     name: Open Close Garage
@@ -74,20 +76,18 @@ switch:
 #define Garage Door Features, Functions, Logged events
 cover:
   - platform: feedback
-    name: Left Garage Door
-    id: left_garage_door
+    name: Right Garage Door
+    id: right_garage_door
     device_class: garage
     has_built_in_endstop: true
-    max_duration: 
-      seconds: 20
     direction_change_wait_time: 
       seconds: 2
     open_action:
     - switch.turn_on: open_close_relay
     open_endstop: door_open
     open_duration: 
-      seconds: 17 #Adjusted open and close timing to suit the door better.
-    close_action: #added close action to see if it will make it function better.
+      seconds: 17
+    close_action: 
     - switch.turn_on: open_close_relay
     close_endstop: door_closed
     close_duration: 
@@ -96,14 +96,10 @@ cover:
     - switch.turn_on: open_close_relay
     on_open: 
       then:
-      - logger.log: Left Garage Door is Open!
+      - logger.log: Right Garage Door is Open!
     on_closed: 
       then:
-        - logger.log: Left Garage Door is Closed!
-
-web_server: #Changed Webserver to see how the other versions looked
-  port: 80
-  log: False
-  version: 2
-
+        - logger.log: Right Garage Door is Closed!
+        
 captive_portal:
+    
